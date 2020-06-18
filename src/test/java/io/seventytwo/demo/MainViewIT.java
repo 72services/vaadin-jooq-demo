@@ -46,21 +46,21 @@ public class MainViewIT extends AbstractViewTest {
     @Test
     public void testClickButtonShowsHelloUserNotificationWhenUserIsNotEmpty() {
         TextFieldElement textField = $(TextFieldElement.class).first();
-        textField.setValue("Vaadiner");
+        textField.setValue("jug.ch");
         ButtonElement button = $(ButtonElement.class).first();
         button.click();
         Assert.assertTrue($(NotificationElement.class).exists());
         NotificationElement notification = $(NotificationElement.class).first();
-        Assert.assertEquals("Hello Vaadiner", notification.getText());
+        Assert.assertEquals("Hello jug.ch", notification.getText());
     }
 
     @Test
     public void testEnterShowsHelloUserNotificationWhenUserIsNotEmpty() {
         TextFieldElement textField = $(TextFieldElement.class).first();
-        textField.setValue("Vaadiner");
+        textField.setValue("jug.ch");
         textField.sendKeys(Keys.ENTER);
         Assert.assertTrue($(NotificationElement.class).exists());
         NotificationElement notification = $(NotificationElement.class).first();
-        Assert.assertEquals("Hello Vaadiner", notification.getText());
+        Assert.assertEquals("Hello jug.ch", notification.getText());
     }
 }

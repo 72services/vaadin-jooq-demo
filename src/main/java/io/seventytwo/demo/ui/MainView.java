@@ -1,4 +1,4 @@
-package io.seventytwo.demo;
+package io.seventytwo.demo.ui;
 
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
@@ -9,7 +9,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.PWA;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.seventytwo.demo.service.GreetService;
 
 /**
  * A sample Vaadin view class.
@@ -34,14 +34,12 @@ public class MainView extends VerticalLayout {
      * @param service The message service. Automatically injected Spring managed bean.
      */
     public MainView(GreetService service) {
-
         // Use TextField for standard text input
         TextField textField = new TextField("Your name");
         textField.addThemeName("bordered");
 
         // Button click listeners can be defined as lambda expressions
-        Button button = new Button("Say hello",
-                e -> Notification.show(service.greet(textField.getValue())));
+        Button button = new Button("Say hello", e -> Notification.show(service.greet(textField.getValue())));
 
         // Theme variants give you predefined extra styles for components.
         // Example: Primary button has a more prominent look.

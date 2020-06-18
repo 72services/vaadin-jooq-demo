@@ -1,4 +1,4 @@
-package io.seventytwo.demo;
+package io.seventytwo.demo.service;
 
 import org.springframework.stereotype.Service;
 
