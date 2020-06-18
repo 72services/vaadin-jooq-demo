@@ -9,11 +9,18 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import io.seventytwo.demo.database.tables.records.DepartmentRecord;
 import io.seventytwo.demo.database.tables.records.EmployeeRecord;
 import org.jooq.DSLContext;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static io.seventytwo.demo.database.tables.Department.DEPARTMENT;
 import static io.seventytwo.demo.database.tables.Employee.EMPLOYEE;
@@ -24,6 +31,7 @@ public class EmployeeDialog extends Dialog {
     private final Binder<EmployeeRecord> binder;
     private EmployeeRecord employeeRecord;
     private Runnable onClose;
+    private Map<Integer, DepartmentRecord> departmentMap;
 
     public EmployeeDialog(DSLContext dsl, TransactionTemplate transactionTemplate) {
         this.dsl = dsl;
@@ -48,27 +56,45 @@ public class EmployeeDialog extends Dialog {
         name.setRequiredIndicatorVisible(true);
         formLayout.add(name);
 
-        binder.forField(name).bind(EmployeeRecord::getName, EmployeeRecord::setName);
+        binder.forField(name).asRequired().bind(EmployeeRecord::getName, EmployeeRecord::setName);
 
         DatePicker dateOfBirth = new DatePicker("Date of Birth");
         dateOfBirth.setRequiredIndicatorVisible(true);
         formLayout.add(dateOfBirth);
 
-        binder.forField(dateOfBirth).bind(EmployeeRecord::getDateOfBirth, EmployeeRecord::setDateOfBirth);
+        binder.forField(dateOfBirth).asRequired().bind(EmployeeRecord::getDateOfBirth, EmployeeRecord::setDateOfBirth);
 
         Select<DepartmentRecord> department = new Select<>();
         department.setLabel("Department");
         department.setRequiredIndicatorVisible(true);
+        department.setRequiredIndicatorVisible(true);
         department.setItemLabelGenerator(DepartmentRecord::getName);
-        department.setItems(dsl.selectFrom(DEPARTMENT).orderBy(DEPARTMENT.NAME).fetch());
+        department.setItems(loadDepartments());
+
+        binder.forField(department)
+                .withConverter(new Converter<DepartmentRecord, Integer>() {
+                    @Override
+                    public Result<Integer> convertToModel(DepartmentRecord value, ValueContext context) {
+                        return Result.ok(value == null ? null : value.getId());
+                    }
+
+                    @Override
+                    public DepartmentRecord convertToPresentation(Integer value, ValueContext context) {
+                        return departmentMap.get(value);
+                    }
+                })
+                .asRequired()
+                .bind(EmployeeRecord::getDepartmentId, EmployeeRecord::setDepartmentId);
 
         formLayout.add(department);
 
         Button save = new Button("Save", buttonClickEvent ->
                 transactionTemplate.executeWithoutResult(transactionStatus -> {
-                    dsl.attach(employeeRecord);
-                    employeeRecord.store();
-                    close();
+                    if (binder.validate().isOk()) {
+                        dsl.attach(employeeRecord);
+                        employeeRecord.store();
+                        close();
+                    }
                 }));
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -76,6 +102,12 @@ public class EmployeeDialog extends Dialog {
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
         add(new HorizontalLayout(save, cancel));
+    }
+
+    private List<DepartmentRecord> loadDepartments() {
+        List<DepartmentRecord> departments = dsl.selectFrom(DEPARTMENT).orderBy(DEPARTMENT.NAME).fetch();
+        departmentMap = departments.stream().collect(Collectors.toMap(DepartmentRecord::getId, departmentRecord -> departmentRecord));
+        return departments;
     }
 
     public void open(Integer employeeId, Runnable onClose) {
