@@ -47,7 +47,7 @@ Project follow the Maven's [standard directory layout structure](https://maven.a
    - All CSS styles used by the application are located under the root directory `frontend/styles`    
    - Templates would be stored under the `frontend/src`
 
-## Lnks
+## Links
 
 - [Vaadin Documentation](https://vaadin.com/docs)
 - [jOOQ](https://jooq.org)
