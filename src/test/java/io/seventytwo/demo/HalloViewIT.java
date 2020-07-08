@@ -19,10 +19,10 @@ public class HalloViewIT extends AbstractViewTest {
     @Test
     public void showHalloJavaSpektrum() {
         TextFieldElement textField = $(TextFieldElement.class).first();
-        textField.setValue("JavaSpektrum");
+        textField.setValue("Java");
         textField.sendKeys(Keys.ENTER);
 
         LabelElement label = $(LabelElement.class).first();
-        Assert.assertEquals("Hallo JavaSpektrum", label.getText());
+        Assert.assertEquals("Hallo, Java", label.getText());
     }
 }
