@@ -20,7 +20,7 @@ import io.seventytwo.demo.service.GreetService;
  * A new instance of this class is created for every new user and every browser tab/window.
  */
 @Route
-public class HelloView extends VerticalLayout {
+public class NotificationView extends VerticalLayout {
 
     /**
      * Construct a new Vaadin view.
@@ -29,7 +29,7 @@ public class HelloView extends VerticalLayout {
      *
      * @param service The message service. Automatically injected Spring managed bean.
      */
-    public HelloView(GreetService service) {
+    public NotificationView(GreetService service) {
         // Use TextField for standard text input
         TextField textField = new TextField("Your name");
         textField.addThemeName("bordered");

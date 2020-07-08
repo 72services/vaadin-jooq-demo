@@ -15,7 +15,7 @@ import org.springframework.core.task.TaskExecutor;
  */
 @Push
 @Route
-@PWA(name = "jug.ch Application", shortName = "jug.ch App", description = "This is an example Vaadin application")
+@PWA(name = "Demo Application", shortName = "Demo", description = "This is a Vaadin Demo Application")
 @CssImport("./styles/shared-styles.css")
 @CssImport(value = "./styles/vaadin-text-field-styles.css", themeFor = "vaadin-text-field")
 public class MainView extends VerticalLayout {
@@ -24,7 +24,7 @@ public class MainView extends VerticalLayout {
 
     public MainView(TaskExecutor taskExecutor) {
         this.taskExecutor = taskExecutor;
-        add(new RouterLink("Hello", HelloView.class));
+        add(new RouterLink("Hello", NotificationView.class));
         add(new RouterLink("Employees", EmployeesView.class));
 
         Button asyncButton = new Button("Async");

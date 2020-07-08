@@ -51,12 +51,14 @@ public class EmployeeDialog extends Dialog {
                 .withConverter(new StringToIntegerConverter("ID must not be null"))
                 .bind(EmployeeRecord::getId, null);
 
-
         TextField name = new TextField("Name");
         name.setRequiredIndicatorVisible(true);
         formLayout.add(name);
 
-        binder.forField(name).asRequired().bind(EmployeeRecord::getName, EmployeeRecord::setName);
+        binder.forField(name)
+                .asRequired()
+                .withValidator(s -> s.length() >=3, "Name ist zu kurz")
+                .bind(EmployeeRecord::getName, EmployeeRecord::setName);
 
         DatePicker dateOfBirth = new DatePicker("Date of Birth");
         dateOfBirth.setRequiredIndicatorVisible(true);

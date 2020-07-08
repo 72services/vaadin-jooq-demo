@@ -14,7 +14,7 @@ public class HalloView extends VerticalLayout {
         TextField textField = new TextField("Ihr Name");
         Label label = new Label();
 
-        Button button = new Button("Gruss", e -> label.setText("Hallo, " + textField.getValue()));
+        Button button = new Button("Gruß", e -> label.setText("Hallo, " + textField.getValue()));
         button.addClickShortcut(Key.ENTER);
 
         add(textField, label, button);
