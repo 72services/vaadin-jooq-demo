@@ -7,6 +7,7 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.PWA;
 import io.seventytwo.demo.service.GreetService;
@@ -20,6 +21,7 @@ import io.seventytwo.demo.service.GreetService;
  * A new instance of this class is created for every new user and every browser tab/window.
  */
 @Route
+@PageTitle("Notification")
 public class NotificationView extends VerticalLayout {
 
     /**

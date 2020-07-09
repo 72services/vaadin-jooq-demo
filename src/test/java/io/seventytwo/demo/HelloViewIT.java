@@ -8,12 +8,12 @@ import org.junit.Test;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-public class HalloViewIT extends AbstractViewTest {
+public class HelloViewIT extends AbstractViewTest {
 
     @Before
     public void setup() {
         setDriver(new ChromeDriver());
-        getDriver().get("http://localhost:8080/hallo");
+        getDriver().get("http://localhost:8080/hello");
     }
 
     @Test
@@ -23,6 +23,6 @@ public class HalloViewIT extends AbstractViewTest {
         textField.sendKeys(Keys.ENTER);
 
         LabelElement label = $(LabelElement.class).first();
-        Assert.assertEquals("Hallo, Java", label.getText());
+        Assert.assertEquals("Hello, Java", label.getText());
     }
 }

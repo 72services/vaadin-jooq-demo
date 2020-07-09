@@ -5,6 +5,7 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
@@ -15,6 +16,7 @@ import org.springframework.core.task.TaskExecutor;
  */
 @Push
 @Route
+@PageTitle("Demo Application")
 @PWA(name = "Demo Application", shortName = "Demo", description = "This is a Vaadin Demo Application")
 @CssImport("./styles/shared-styles.css")
 @CssImport(value = "./styles/vaadin-text-field-styles.css", themeFor = "vaadin-text-field")
@@ -24,10 +26,12 @@ public class MainView extends VerticalLayout {
 
     public MainView(TaskExecutor taskExecutor) {
         this.taskExecutor = taskExecutor;
-        add(new RouterLink("Hello", NotificationView.class));
+
+        add(new RouterLink("Hallo", HelloView.class));
+        add(new RouterLink("Notification", NotificationView.class));
         add(new RouterLink("Employees", EmployeesView.class));
 
-        Button asyncButton = new Button("Async");
+        Button asyncButton = new Button("Async Execution");
         asyncButton.addClickListener(event ->
                 this.taskExecutor.execute(() -> {
                     try {

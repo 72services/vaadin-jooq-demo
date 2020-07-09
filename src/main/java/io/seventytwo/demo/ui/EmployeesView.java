@@ -3,17 +3,24 @@ package io.seventytwo.demo.ui;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
+import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import io.seventytwo.demo.database.tables.records.VEmployeeRecord;
+import org.apache.commons.lang3.StringUtils;
+import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.OrderField;
+import org.jooq.impl.DSL;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.ArrayList;
@@ -22,10 +29,11 @@ import java.util.List;
 import static io.seventytwo.demo.database.tables.VEmployee.V_EMPLOYEE;
 
 @Route
+@PageTitle("Employees")
 public class EmployeesView extends Div {
 
     private final DSLContext dsl;
-    private final CallbackDataProvider<VEmployeeRecord, Void> dataProvider;
+    private final ConfigurableFilterDataProvider<VEmployeeRecord, Void, Condition> dataProvider;
 
     public EmployeesView(DSLContext dsl, TransactionTemplate transactionTemplate) {
         this.dsl = dsl;
@@ -34,10 +42,21 @@ public class EmployeesView extends Div {
         employeeGrid.setColumnReorderingAllowed(true);
         employeeGrid.setMultiSort(true);
 
-        dataProvider = new CallbackDataProvider<>(
-                query -> dsl.selectFrom(V_EMPLOYEE).orderBy(createOrderBy(query)).offset(query.getOffset()).limit(query.getLimit()).fetchStream(),
-                query -> dsl.fetchCount(V_EMPLOYEE),
-                VEmployeeRecord::getEmployeeId);
+        dataProvider = new CallbackDataProvider<VEmployeeRecord, Condition>(
+                query -> dsl
+                        .selectFrom(V_EMPLOYEE)
+                        .where(query.getFilter().orElse(DSL.noCondition()))
+                        .orderBy(createOrderBy(query))
+                        .offset(query.getOffset())
+                        .limit(query.getLimit())
+                        .fetchStream(),
+                query -> dsl
+                        .selectCount()
+                        .from(V_EMPLOYEE)
+                        .where(query.getFilter().orElse(DSL.noCondition()))
+                        .fetchOneInto(Integer.class),
+                VEmployeeRecord::getEmployeeId)
+                .withConfigurableFilter();
 
         employeeGrid.setDataProvider(dataProvider);
 
@@ -53,12 +72,22 @@ public class EmployeesView extends Div {
                         })))
                 .setFrozen(true);
 
-        Button addButton = new Button("Add Employee", buttonClickEvent -> {
-            EmployeeDialog dialog = new EmployeeDialog(dsl, transactionTemplate);
-            dialog.open(null, () -> dataProvider.refreshAll());
+        TextField filter = new TextField("Filter");
+        filter.setValueChangeMode(ValueChangeMode.EAGER);
+        filter.addValueChangeListener(event -> {
+            if (StringUtils.isNotBlank(event.getValue())) {
+                dataProvider.setFilter(DSL.upper(V_EMPLOYEE.EMPLOYEE_NAME).like("%" + event.getValue().toUpperCase() + "%"));
+            } else {
+                dataProvider.setFilter(null);
+            }
         });
 
-        add(employeeGrid, addButton);
+        Button addButton = new Button("Add Employee", buttonClickEvent -> {
+            EmployeeDialog dialog = new EmployeeDialog(dsl, transactionTemplate);
+            dialog.open(null, dataProvider::refreshAll);
+        });
+
+        add(filter, employeeGrid, addButton);
     }
 
     private void refreshEmployee(VEmployeeRecord vEmployeeRecord) {
@@ -69,7 +98,7 @@ public class EmployeesView extends Div {
         dataProvider.refreshItem(reloadedEmployee);
     }
 
-    private List<OrderField<?>> createOrderBy(Query<VEmployeeRecord, Void> query) {
+    private List<OrderField<?>> createOrderBy(Query<VEmployeeRecord, Condition> query) {
         List<OrderField<?>> orderFields = new ArrayList<>();
         for (QuerySortOrder sortOrder : query.getSortOrders()) {
             Field<?> field = V_EMPLOYEE.field(sortOrder.getSorted());
