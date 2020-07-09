@@ -1,7 +1,5 @@
 package io.seventytwo.demo.data;
 
-import io.seventytwo.demo.database.tables.Department;
-import io.seventytwo.demo.database.tables.Employee;
 import org.jooq.DSLContext;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
