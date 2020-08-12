@@ -9,7 +9,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 @Route
-@PageTitle("Hallo")
+@PageTitle("Hello")
 public class HelloView extends VerticalLayout {
 
     public HelloView() {
