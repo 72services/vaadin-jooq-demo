@@ -17,7 +17,7 @@ public class HelloViewIT extends AbstractViewTest {
     }
 
     @Test
-    public void showHalloJava() {
+    public void showHelloJava() {
         TextFieldElement textField = $(TextFieldElement.class).first();
         textField.setValue("Java");
         textField.sendKeys(Keys.ENTER);

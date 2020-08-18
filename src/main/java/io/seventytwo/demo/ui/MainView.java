@@ -27,7 +27,7 @@ public class MainView extends VerticalLayout {
     public MainView(TaskExecutor taskExecutor) {
         this.taskExecutor = taskExecutor;
 
-        add(new RouterLink("Hallo", HelloView.class));
+        add(new RouterLink("Hello", HelloView.class));
         add(new RouterLink("Notification", NotificationView.class));
         add(new RouterLink("Employees", EmployeesView.class));
 
