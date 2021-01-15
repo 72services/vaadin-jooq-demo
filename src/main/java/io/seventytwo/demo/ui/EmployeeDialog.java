@@ -57,7 +57,7 @@ public class EmployeeDialog extends Dialog {
 
         binder.forField(name)
                 .asRequired()
-                .withValidator(s -> s.length() >=3, "Name ist zu kurz")
+                .withValidator(s -> s.length() >=3, "Name must be at least 3 characters")
                 .bind(EmployeeRecord::getName, EmployeeRecord::setName);
 
         DatePicker dateOfBirth = new DatePicker("Date of Birth");
