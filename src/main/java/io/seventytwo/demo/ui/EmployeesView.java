@@ -19,6 +19,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import static io.seventytwo.demo.database.tables.VEmployee.V_EMPLOYEE;
 import static io.seventytwo.vaadinjooq.util.VaadinJooqUtil.orderFields;
+import static org.jooq.impl.DSL.upper;
 
 @Route
 @PageTitle("Employees")
@@ -35,6 +36,21 @@ public class EmployeesView extends Div {
         Grid<VEmployeeRecord> employeeGrid = new Grid<>();
         employeeGrid.setColumnReorderingAllowed(true);
         employeeGrid.setMultiSort(true);
+
+        employeeGrid.addColumn(VEmployeeRecord::getEmployeeId)
+                .setHeader("ID").setSortProperty(V_EMPLOYEE.EMPLOYEE_ID.getName());
+        employeeGrid.addColumn(VEmployeeRecord::getEmployeeName)
+                .setHeader("Name").setSortProperty(V_EMPLOYEE.EMPLOYEE_NAME.getName());
+        employeeGrid.addColumn(VEmployeeRecord::getDepartmentName)
+                .setHeader("Department").setSortProperty(V_EMPLOYEE.DEPARTMENT_NAME.getName());
+
+        employeeGrid.addColumn(new ComponentRenderer<>(vEmployeeRecord ->
+                new Button("Edit",
+                        buttonClickEvent -> {
+                            EmployeeDialog dialog = new EmployeeDialog(dsl, transactionTemplate);
+                            dialog.open(vEmployeeRecord.getEmployeeId(), () -> refreshEmployee(vEmployeeRecord));
+                        })))
+                .setFrozen(true);
 
         dataProvider = new CallbackDataProvider<VEmployeeRecord, Condition>(
                 query -> dsl
@@ -54,23 +70,12 @@ public class EmployeesView extends Div {
 
         employeeGrid.setDataProvider(dataProvider);
 
-        employeeGrid.addColumn(VEmployeeRecord::getEmployeeId).setHeader("ID").setSortProperty(V_EMPLOYEE.EMPLOYEE_ID.getName());
-        employeeGrid.addColumn(VEmployeeRecord::getEmployeeName).setHeader("Name").setSortProperty(V_EMPLOYEE.EMPLOYEE_NAME.getName());
-        employeeGrid.addColumn(VEmployeeRecord::getDepartmentName).setHeader("Department").setSortProperty(V_EMPLOYEE.DEPARTMENT_NAME.getName());
-
-        employeeGrid.addColumn(new ComponentRenderer<>(vEmployeeRecord ->
-                new Button("Edit",
-                        buttonClickEvent -> {
-                            EmployeeDialog dialog = new EmployeeDialog(dsl, transactionTemplate);
-                            dialog.open(vEmployeeRecord.getEmployeeId(), () -> refreshEmployee(vEmployeeRecord));
-                        })))
-                .setFrozen(true);
-
         TextField filter = new TextField("Filter");
         filter.setValueChangeMode(ValueChangeMode.EAGER);
         filter.addValueChangeListener(event -> {
             if (StringUtils.isNotBlank(event.getValue())) {
-                dataProvider.setFilter(DSL.upper(V_EMPLOYEE.EMPLOYEE_NAME).like("%" + event.getValue().toUpperCase() + "%"));
+                dataProvider.setFilter(
+                        upper(V_EMPLOYEE.EMPLOYEE_NAME).like("%" + event.getValue().toUpperCase() + "%"));
             } else {
                 dataProvider.setFilter(null);
             }
