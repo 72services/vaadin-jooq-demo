@@ -13,6 +13,8 @@ import com.vaadin.flow.router.Route;
 public class HelloView extends VerticalLayout {
 
     public HelloView() {
+        addClassName("centered-content");
+
         TextField textField = new TextField("Your Name");
         Label label = new Label();
 

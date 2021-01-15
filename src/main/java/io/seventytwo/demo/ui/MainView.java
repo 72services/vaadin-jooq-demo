@@ -27,6 +27,8 @@ public class MainView extends VerticalLayout {
     public MainView(TaskExecutor taskExecutor) {
         this.taskExecutor = taskExecutor;
 
+        addClassName("centered-content");
+
         add(new RouterLink("Hello", HelloView.class));
         add(new RouterLink("Notification", NotificationView.class));
         add(new RouterLink("Employees", EmployeesView.class));

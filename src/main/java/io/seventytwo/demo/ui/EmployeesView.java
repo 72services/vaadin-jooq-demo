@@ -30,6 +30,8 @@ public class EmployeesView extends Div {
     public EmployeesView(DSLContext dsl, TransactionTemplate transactionTemplate) {
         this.dsl = dsl;
 
+        addClassName("centered-content-wide");
+
         Grid<VEmployeeRecord> employeeGrid = new Grid<>();
         employeeGrid.setColumnReorderingAllowed(true);
         employeeGrid.setMultiSort(true);
