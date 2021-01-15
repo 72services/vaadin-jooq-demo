@@ -98,6 +98,7 @@ public class EmployeeDialog extends Dialog {
                         close();
                     }
                 }));
+
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button cancel = new Button("Cancel", buttonClickEvent -> close());
